@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:reciepe_app/error/failure.dart';
@@ -9,6 +7,7 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_search_bar.dart';
 import '../widgets/recipe_card.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
+import '../constants/app_colors.dart';
 
 class SeafoodScreen extends StatefulWidget {
   const SeafoodScreen({super.key});
@@ -18,85 +17,29 @@ class SeafoodScreen extends StatefulWidget {
 }
 
 class _SeafoodScreenState extends State<SeafoodScreen> {
-  final List<Meal> data = [
-    Meal(
-      idMeal: "1",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "2",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "1",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "2",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "1",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "2",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "1",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "2",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "1",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "2",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "1",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "2",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "1",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-    Meal(
-      idMeal: "2",
-      strMeal: "Seafood",
-      strMealThumb: "https://www.themealdb.com/images/category/Seafood.png",
-    ),
-  ];
   late ApiService apiService;
-  // String _searchQuery = '';
   int _currentNavIndex = 1;
+
+  // Currently selected category (default: Seafood, matches original screen)
+  String _selectedCategory = "Seafood";
+
+  // Future for the meals list — rebuilt whenever the category changes
+  late Future<Either<Failure, List<Meal>>> _mealsFuture;
+
   @override
   void initState() {
     super.initState();
     apiService = ApiService();
+    _mealsFuture = apiService.getMealsByCategory(_selectedCategory);
+  }
+
+  // Called whenever the user taps a category chip
+  void _onCategorySelected(String category) {
+    if (category == _selectedCategory) return;
+    setState(() {
+      _selectedCategory = category;
+      _mealsFuture = apiService.getMealsByCategory(category);
+    });
   }
 
   @override
@@ -104,7 +47,7 @@ class _SeafoodScreenState extends State<SeafoodScreen> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 226, 227, 227),
       appBar: CustomAppBar(
-        title: 'Seafood',
+        title: _selectedCategory,
         onMenuPressed: () {
           ScaffoldMessenger.of(
             context,
@@ -119,79 +62,142 @@ class _SeafoodScreenState extends State<SeafoodScreen> {
       body: Column(
         children: [
           CustomSearchBar(
-            hintText: 'Search in Seafood',
-            onChanged: (query) {
-              setState(() {
-                // _searchQuery = query;
-              });
-            },
+            hintText: 'Search in $_selectedCategory',
+            onChanged: (query) {},
           ),
+          // Category chips row
           FutureBuilder<Either<Failure, List<CategoryModel>>>(
             future: apiService.getCategories(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const SizedBox(
+                  height: 50,
+                  child: Center(child: CircularProgressIndicator()),
+                );
               } else if (snapshot.hasError) {
-                return Center(child: Text(snapshot.error.toString()));
+                return SizedBox(
+                  height: 50,
+                  child: Center(child: Text(snapshot.error.toString())),
+                );
               } else if (snapshot.hasData) {
                 final result = snapshot.data;
                 return result!.fold(
                   (failure) {
-                    return Text(
-                      failure.errorMessage,
-                      style: TextStyle(color: Colors.red),
+                    return SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: Text(
+                          failure.errorMessage,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
                     );
                   },
                   (categories) {
-                    // final categorie = categories;
                     return SizedBox(
                       height: 50,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         itemBuilder: (context, index) {
-                          final data = categories; //! List of Categories
-                          final item = data[index]; //! One Category
+                          final item = categories[index];
+                          final isSelected =
+                              item.strCategory == _selectedCategory;
 
-                          return Chip(label: Text(item.strCategory!));
+                          return ChoiceChip(
+                            label: Text(item.strCategory ?? ''),
+                            selected: isSelected,
+                            selectedColor: AppColors.primaryBrown,
+                            backgroundColor: AppColors.cardBackground,
+                            labelStyle: TextStyle(
+                              color: isSelected
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide(
+                                color: isSelected
+                                    ? AppColors.primaryBrown
+                                    : AppColors.subtleBorder,
+                              ),
+                            ),
+                            onSelected: (_) {
+                              if (item.strCategory != null) {
+                                _onCategorySelected(item.strCategory!);
+                              }
+                            },
+                          );
                         },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return SizedBox(width: 10);
-                        },
-                        itemCount: data.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(width: 10),
+                        itemCount: categories.length,
                       ),
                     );
                   },
                 );
               } else {
-                return Container(color: Colors.blueGrey);
+                return const SizedBox(height: 50);
               }
             },
           ),
+          const SizedBox(height: 8),
+          // Meals grid — filtered by selected category
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.72,
-                crossAxisSpacing: 14,
-                mainAxisSpacing: 16,
-              ),
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return RecipeCard(
-                  // meals: meals.meals![index],
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Selected: ${data[index].strMeal}'),
+            child: FutureBuilder<Either<Failure, List<Meal>>>(
+              future: _mealsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text(snapshot.error.toString()));
+                } else if (snapshot.hasData) {
+                  return snapshot.data!.fold(
+                    (failure) => Center(
+                      child: Text(
+                        failure.errorMessage,
+                        style: const TextStyle(color: Colors.red),
                       ),
-                    );
-                  },
-                  meal: data[index],
-                );
+                    ),
+                    (meals) {
+                      if (meals.isEmpty) {
+                        return const Center(
+                          child: Text('No recipes found'),
+                        );
+                      }
+                      return GridView.builder(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.72,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 16,
+                        ),
+                        itemCount: meals.length,
+                        itemBuilder: (context, index) {
+                          return RecipeCard(
+                            meal: meals[index],
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Selected: ${meals[index].strMeal}',
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
               },
             ),
           ),
@@ -207,10 +213,4 @@ class _SeafoodScreenState extends State<SeafoodScreen> {
       ),
     );
   }
-}
-
-class RecipeData {
-  String title;
-  String imageUrl;
-  RecipeData(this.title, this.imageUrl);
 }

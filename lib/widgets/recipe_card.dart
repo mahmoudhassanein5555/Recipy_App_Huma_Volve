@@ -28,7 +28,7 @@ class RecipeCard extends StatelessWidget {
                 child: AspectRatio(
                   aspectRatio: 1.1,
                   child: Image.network(
-                    meal.strMealThumb!,
+                    meal.strMealThumb,
                     fit: BoxFit.cover,
                     loadingBuilder: (context, child, loadingProgress) {
                       if (loadingProgress == null) return child;
@@ -62,7 +62,7 @@ class RecipeCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2.0),
             child: Text(
-              meal.strMeal!,
+              meal.strMeal,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
@@ -87,6 +87,14 @@ class Meal {
   Meal({
     required this.idMeal,
     required this.strMeal,
-    required this.strMealThumb, 
+    required this.strMealThumb,
   });
+
+  factory Meal.fromJson(Map<String, dynamic> json) {
+    return Meal(
+      idMeal: json['idMeal']?.toString() ?? '',
+      strMeal: json['strMeal']?.toString() ?? '',
+      strMealThumb: json['strMealThumb']?.toString() ?? '',
+    );
+  }
 }

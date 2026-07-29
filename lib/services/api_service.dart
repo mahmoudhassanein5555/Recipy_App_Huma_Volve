@@ -3,12 +3,11 @@ import 'package:dio/dio.dart';
 import 'package:reciepe_app/error/error_handler.dart';
 import 'package:reciepe_app/error/failure.dart';
 import 'package:reciepe_app/models/category_model.dart';
+import 'package:reciepe_app/widgets/recipe_card.dart';
 
 class ApiService {
   final dio = Dio(
     BaseOptions(
-      // connectTimeout: ,
-      // receiveTimeout: Duration(milliseconds: 1),
       baseUrl: "https://www.themealdb.com/api/json/v1/1",
       headers: {
         "Accept": "application/json",
@@ -16,6 +15,7 @@ class ApiService {
       },
     ),
   );
+
   ApiService() {
     dio.interceptors.add(
       InterceptorsWrapper(
@@ -71,5 +71,25 @@ class ApiService {
       return left(failure);
     }
   }
-  //https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood
+
+  Future<Either<Failure, List<Meal>>> getMealsByCategory(
+    String category,
+  ) async {
+    try {
+      final response = await dio.get(
+        "/filter.php",
+        queryParameters: {"c": category},
+      );
+      if (response.statusCode! >= 200 && response.statusCode! < 300) {
+        final jsonRes = response.data["meals"] as List? ?? [];
+        final modelRes = jsonRes.map((e) => Meal.fromJson(e)).toList();
+        return right(modelRes);
+      } else {
+        throw Exception("Something went wrong");
+      }
+    } on DioException catch (e) {
+      final failure = HandleError.handle(e);
+      return left(failure);
+    }
+  }
 }
