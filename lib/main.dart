@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reciepe_app/cubit/recipe_home_cubit.dart';
 import 'package:reciepe_app/screens/recipe_home_screen.dart';
+import 'package:reciepe_app/services/api_service.dart';
 
 void main() {
   runApp(const RecipeApp());
@@ -23,7 +26,10 @@ class RecipeApp extends StatelessWidget {
         fontFamily: 'Roboto',
       ),
       // home: const SeafoodScreen(),
-      home: SeafoodScreen(),
+      home: BlocProvider(
+        create: (context) => RecipeHomeCubit(ApiService(),RecipeHomeInitial()),
+        child: HomeScreen(),
+      ),
     );
   }
 }

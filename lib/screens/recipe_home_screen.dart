@@ -1,7 +1,8 @@
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reciepe_app/cubit/recipe_home_cubit.dart';
 import 'package:reciepe_app/error/failure.dart';
-import 'package:reciepe_app/models/category_model.dart';
 import 'package:reciepe_app/services/api_service.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_search_bar.dart';
@@ -9,14 +10,14 @@ import '../widgets/recipe_card.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 import '../constants/app_colors.dart';
 
-class SeafoodScreen extends StatefulWidget {
-  const SeafoodScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<SeafoodScreen> createState() => _SeafoodScreenState();
+  State<HomeScreen> createState() => _SeafoodScreenState();
 }
 
-class _SeafoodScreenState extends State<SeafoodScreen> {
+class _SeafoodScreenState extends State<HomeScreen> {
   late ApiService apiService;
   int _currentNavIndex = 1;
 
@@ -29,6 +30,7 @@ class _SeafoodScreenState extends State<SeafoodScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<RecipeHomeCubit>().fethCategories();
     apiService = ApiService();
     _mealsFuture = apiService.getMealsByCategory(_selectedCategory);
   }
@@ -65,83 +67,61 @@ class _SeafoodScreenState extends State<SeafoodScreen> {
             hintText: 'Search in $_selectedCategory',
             onChanged: (query) {},
           ),
-          // Category chips row
-          FutureBuilder<Either<Failure, List<CategoryModel>>>(
-            future: apiService.getCategories(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                  height: 50,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              } else if (snapshot.hasError) {
+          BlocBuilder<RecipeHomeCubit, RecipeHomeState>(
+            builder: (context, state) {
+              if (state is RecipeHomeLoading) {
+                return Center(child: CircularProgressIndicator());
+              } else if (state is RecipeHomeFailure) {
+                return Center(child: Text(state.errorMessage));
+              }
+              if (state is RecipeHomeSuccess) {
+                final categories = state.categories;
                 return SizedBox(
                   height: 50,
-                  child: Center(child: Text(snapshot.error.toString())),
-                );
-              } else if (snapshot.hasData) {
-                final result = snapshot.data;
-                return result!.fold(
-                  (failure) {
-                    return SizedBox(
-                      height: 50,
-                      child: Center(
-                        child: Text(
-                          failure.errorMessage,
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      ),
-                    );
-                  },
-                  (categories) {
-                    return SizedBox(
-                      height: 50,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        itemBuilder: (context, index) {
-                          final item = categories[index];
-                          final isSelected =
-                              item.strCategory == _selectedCategory;
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemBuilder: (context, index) {
+                      final item = categories[index];
+                      final isSelected = item.strCategory == _selectedCategory;
 
-                          return ChoiceChip(
-                            label: Text(item.strCategory ?? ''),
-                            selected: isSelected,
-                            selectedColor: AppColors.primaryBrown,
-                            backgroundColor: AppColors.cardBackground,
-                            labelStyle: TextStyle(
-                              color: isSelected
-                                  ? Colors.white
-                                  : AppColors.textPrimary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                              side: BorderSide(
-                                color: isSelected
-                                    ? AppColors.primaryBrown
-                                    : AppColors.subtleBorder,
-                              ),
-                            ),
-                            onSelected: (_) {
-                              if (item.strCategory != null) {
-                                _onCategorySelected(item.strCategory!);
-                              }
-                            },
-                          );
+                      return ChoiceChip(
+                        label: Text(item.strCategory ?? ''),
+                        selected: isSelected,
+                        selectedColor: AppColors.primaryBrown,
+                        backgroundColor: AppColors.cardBackground,
+                        labelStyle: TextStyle(
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          side: BorderSide(
+                            color: isSelected
+                                ? AppColors.primaryBrown
+                                : AppColors.subtleBorder,
+                          ),
+                        ),
+                        onSelected: (_) {
+                          if (item.strCategory != null) {
+                            _onCategorySelected(item.strCategory!);
+                          }
                         },
-                        separatorBuilder: (context, index) =>
-                            const SizedBox(width: 10),
-                        itemCount: categories.length,
-                      ),
-                    );
-                  },
+                      );
+                    },
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 10),
+                    itemCount: categories.length,
+                  ),
                 );
               } else {
-                return const SizedBox(height: 50);
+                return Center(child: Text('Unexpected Error'));
               }
             },
           ),
+         
           const SizedBox(height: 8),
           // Meals grid — filtered by selected category
           Expanded(
@@ -162,9 +142,7 @@ class _SeafoodScreenState extends State<SeafoodScreen> {
                     ),
                     (meals) {
                       if (meals.isEmpty) {
-                        return const Center(
-                          child: Text('No recipes found'),
-                        );
+                        return const Center(child: Text('No recipes found'));
                       }
                       return GridView.builder(
                         padding: const EdgeInsets.symmetric(
@@ -173,11 +151,11 @@ class _SeafoodScreenState extends State<SeafoodScreen> {
                         ),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.72,
-                          crossAxisSpacing: 14,
-                          mainAxisSpacing: 16,
-                        ),
+                              crossAxisCount: 2,
+                              childAspectRatio: 0.72,
+                              crossAxisSpacing: 14,
+                              mainAxisSpacing: 16,
+                            ),
                         itemCount: meals.length,
                         itemBuilder: (context, index) {
                           return RecipeCard(
