@@ -25,10 +25,11 @@ class RecipeApp extends StatelessWidget {
         ),
         fontFamily: 'Roboto',
       ),
-      // home: const SeafoodScreen(),
       home: BlocProvider(
-        create: (context) => RecipeHomeCubit(ApiService(),RecipeHomeInitial()),
-        child: HomeScreen(),
+        create: (context) => RecipeHomeCubit(ApiService())
+          ..fetchCategories()
+          ..fetchMealsByCategory('Seafood'),
+        child: const HomeScreen(),
       ),
     );
   }
