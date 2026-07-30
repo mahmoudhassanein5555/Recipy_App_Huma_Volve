@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+<<<<<<< HEAD
+import 'package:reciepe_app/cubit/recipe_home_cubit.dart';
+import 'package:reciepe_app/screens/recipe_home_screen.dart';
+import 'package:reciepe_app/services/api_service.dart';
+=======
 import 'package:reciepe_app/core/constants/app_colors.dart';
 import 'package:reciepe_app/core/network/api_service.dart';
 import 'package:reciepe_app/feature/home/data/data_sources/home_data_source.dart';
@@ -11,6 +16,7 @@ import 'package:reciepe_app/feature/home/domain/use_case/home_get_meals_use_case
 import 'package:reciepe_app/feature/home/presentation/view_model/recipe_home_cubit.dart';
 import 'package:reciepe_app/feature/home/presentation/view_model/recipe_home_state.dart';
 import 'package:reciepe_app/feature/home/presentation/view/recipe_home_screen.dart';
+>>>>>>> mahmoud_repo/master
 
 void main() {
   runApp(const RecipeApp());
@@ -38,10 +44,18 @@ class RecipeApp extends StatelessWidget {
         ),
         fontFamily: 'Roboto',
       ),
+<<<<<<< HEAD
+      home: BlocProvider(
+        create: (context) => RecipeHomeCubit(ApiService())
+          ..fetchCategories()
+          ..fetchMealsByCategory('Seafood'),
+        child: const HomeScreen(),
+=======
       // home: const SeafoodScreen(),
       home: BlocProvider(
         create: (context) => recipeHomeCubit ,
         child: HomeScreen(),
+>>>>>>> mahmoud_repo/master
       ),
     );
   }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD:lib/widgets/custom_bottom_nav_bar.dart
+import '../core/constants/app_colors.dart';
+=======
 import '../../../../core/constants/app_colors.dart';
+>>>>>>> mahmoud_repo/master:lib/feature/home/presentation/widgets/custom_bottom_nav_bar.dart
 
 class CustomBottomNavBar extends StatelessWidget {
   final int selectedIndex;

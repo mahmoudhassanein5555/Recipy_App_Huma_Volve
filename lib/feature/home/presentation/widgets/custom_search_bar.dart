@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD:lib/widgets/custom_search_bar.dart
+import '../core/constants/app_colors.dart';
+=======
 import '../../../../core/constants/app_colors.dart';
+>>>>>>> mahmoud_repo/master:lib/feature/home/presentation/widgets/custom_search_bar.dart
 
 class CustomSearchBar extends StatelessWidget {
   final String hintText;

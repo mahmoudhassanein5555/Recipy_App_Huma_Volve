@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD:lib/widgets/filter_header_row.dart
+import '../core/constants/app_colors.dart';
+=======
 import '../../../../core/constants/app_colors.dart';
+>>>>>>> mahmoud_repo/master:lib/feature/home/presentation/widgets/filter_header_row.dart
 
 class FilterHeaderRow extends StatelessWidget {
   final int count;
