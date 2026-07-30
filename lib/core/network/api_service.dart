@@ -1,8 +1,16 @@
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:reciepe_app/core/error/error_handler.dart';
+import 'package:reciepe_app/core/error/failure.dart';
+import 'package:reciepe_app/feature/meal_details/models/meal_detail_model.dart';
 
 class ApiService {
   final dio = Dio(
     BaseOptions(
+      // connectTimeout: ,
+      // receiveTimeout: Duration(milliseconds: 1),
       baseUrl: "https://www.themealdb.com/api/json/v1/1",
       headers: {
         "Accept": "application/json",
@@ -10,42 +18,45 @@ class ApiService {
       },
     ),
   );
-
   ApiService() {
     dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          print("=======================Request=====================");
-          print(options.method);
-          print(options.baseUrl);
-          print(options.path);
-          print(options.queryParameters);
-          print(options.data);
-          print("==================================================");
-          return handler.next(options);
-        },
-        onResponse: (response, handler) {
-          print("=====================Response======================");
-          print(response.statusCode);
-          print(response.statusMessage);
-          print(response.headers);
-          print(response.requestOptions);
-          print(response.isRedirect);
-          print(response.redirects);
-          print(response.data);
-          print("==================================================");
-          return handler.next(response);
-        },
-        onError: (error, handler) {
-          print("=====================Error======================");
-          print(error.response?.statusCode);
-          print(error.response?.statusMessage);
-          print(error.response?.headers);
-          print(error.response?.requestOptions);
-          print("==================================================");
-          return handler.next(error);
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        error: true,
+        compact: true,
+        maxWidth: 90,
+        enabled: kDebugMode,
+        filter: (options, args) {
+          if (options.path.contains('/posts')) {
+            return false;
+          }
+          return !args.isResponse || !args.hasUint8ListData;
         },
       ),
     );
+  }
+  Future<Either<Failure, MealDetailModel>> getMealDetails(String mealId) async {
+    try {
+      final response = await dio.get(
+        "/lookup.php",
+        queryParameters: {"i": mealId},
+      );
+      if (response.statusCode! >= 200 && response.statusCode! < 300) {
+        final jsonRes = response.data["meals"] as List;
+        if (jsonRes.isNotEmpty) {
+          return right(MealDetailModel.fromJson(jsonRes.first));
+        } else {
+          throw Exception("Meal details not found");
+        }
+      } else {
+        throw Exception("Something went wrong");
+      }
+    } on DioException catch (e) {
+      final failure = HandleError.handle(e);
+      return left(failure);
+    }
   }
 }
