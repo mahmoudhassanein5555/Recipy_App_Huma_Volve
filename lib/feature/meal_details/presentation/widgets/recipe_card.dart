@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reciepe_app/feature/home/domain/entity/home_meal_entity.dart';
-import '../../../core/constants/app_colors.dart';
+import 'package:reciepe_app/core/constants/app_colors.dart';
 
 class RecipeCard extends StatelessWidget {
   final MealEntity meal;
@@ -20,13 +20,12 @@ class RecipeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Recipe Image Container
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: AspectRatio(
               aspectRatio: 1.1,
               child: Image.network(
-                meal.strMealThumb ?? '',
+                meal.strMealThumb,
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
@@ -54,11 +53,10 @@ class RecipeCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          // Recipe Title
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2.0),
             child: Text(
-              meal.strMeal ?? '',
+              meal.strMeal,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:reciepe_app/core/constants/app_colors.dart';
-import 'package:reciepe_app/feature/meal_details/widgets/meal_details_sliver_app_bar.dart';
+import 'package:reciepe_app/feature/meal_details/presentation/widgets/meal_details_sliver_app_bar.dart';
 
 class MealDetailsLoadingView extends StatelessWidget {
   final String mealTitle;
