@@ -6,7 +6,7 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_search_bar.dart';
 import '../widgets/recipe_card.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
-import '../constants/app_colors.dart';
+import '../core/constants/app_colors.dart';
  
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,7 +21,7 @@ class _SeafoodScreenState extends State<HomeScreen> {
   // Currently selected category (default: Seafood, matches original screen)
   String _selectedCategory = "Seafood";
  
-  // Called whenever the user taps a category chip
+  // Called whenever the user taps a category chip  
   void _onCategorySelected(String category) {
     if (category == _selectedCategory) return;
     setState(() {
