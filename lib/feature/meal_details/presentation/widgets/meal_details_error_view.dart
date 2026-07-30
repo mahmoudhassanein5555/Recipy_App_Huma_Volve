@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reciepe_app/core/constants/app_colors.dart';
-import 'package:reciepe_app/feature/meal_details/cubit/meal_details_cubit.dart';
-import 'package:reciepe_app/feature/meal_details/widgets/meal_details_sliver_app_bar.dart';
+import 'package:reciepe_app/feature/meal_details/presentation/view_model/meal_details_cubit.dart';
+import 'package:reciepe_app/feature/meal_details/presentation/widgets/meal_details_sliver_app_bar.dart';
 
 class MealDetailsErrorView extends StatelessWidget {
   final String mealTitle;

@@ -1,4 +1,4 @@
-import 'package:reciepe_app/feature/meal_details/models/meal_detail_model.dart';
+import 'package:reciepe_app/feature/meal_details/domain/entity/meal_detail_entity.dart';
 
 abstract class MealDetailsState {}
 
@@ -7,7 +7,7 @@ class MealDetailsInitial extends MealDetailsState {}
 class MealDetailsLoading extends MealDetailsState {}
 
 class MealDetailsSuccess extends MealDetailsState {
-  final MealDetailModel mealDetail;
+  final MealDetailEntity mealDetail;
   MealDetailsSuccess(this.mealDetail);
 }
 

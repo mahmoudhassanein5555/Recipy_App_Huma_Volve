@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:reciepe_app/core/network/api_service.dart';
-import 'package:reciepe_app/feature/meal_details/cubit/meal_details_cubit.dart';
+import 'package:reciepe_app/feature/meal_details/data/data_sources/meal_details_remote_data_source_imp.dart';
+import 'package:reciepe_app/feature/meal_details/data/repository/meal_details_repository_imp.dart';
+import 'package:reciepe_app/feature/meal_details/domain/use_case/get_meal_details_use_case.dart';
 import 'package:reciepe_app/feature/home/presentation/view_model/recipe_home_cubit.dart';
 import 'package:reciepe_app/feature/home/presentation/view_model/recipe_home_state.dart';
-import 'package:reciepe_app/feature/meal_details/screens/meal_details_screen.dart';
+import 'package:reciepe_app/feature/meal_details/presentation/view_model/meal_details_cubit.dart';
+import 'package:reciepe_app/feature/meal_details/presentation/view/meal_details_screen.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_search_bar.dart';
-import '../../../meal_details/widgets/recipe_card.dart';
+import 'package:reciepe_app/feature/meal_details/presentation/widgets/recipe_card.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -71,18 +74,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemBuilder: (context, index) {
-                      final item = categories[index]; //! One Category
+                      final item = categories[index];
                       final isSelected = _selectedCategoryIndex == index;
                       return GestureDetector(
                         onTap: () {
                           setState(() {
                             _selectedCategoryIndex = index;
                           });
-                          if (item.strCategory != null) {
-                            context
-                                .read<RecipeHomeCubit>()
-                                .getMealsByCategory(item.strCategory!);
-                          }
+                          context
+                              .read<RecipeHomeCubit>()
+                              .getMealsByCategory(item.strCategory);
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
@@ -115,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           child: Center(
                             child: Text(
-                              item.strCategory ?? '',
+                              item.strCategory,
                               style: TextStyle(
                                 color: isSelected
                                     ? Colors.white
@@ -153,13 +154,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       final meal = meals[index];
                       return RecipeCard(
                         onTap: () {
-                          if (meal.idMeal != null) {
+                          if (meal.idMeal.isNotEmpty) {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => BlocProvider(
                                   create: (context) =>
-                                      MealDetailsCubit(ApiService())
-                                        ..fetchMealDetails(meal.idMeal!),
+                                      MealDetailsCubit(
+                                        GetMealDetailsUseCase(
+                                          MealDetailsRepositoryImp(
+                                            MealDetailsRemoteDataSourceImp(
+                                              ApiService(),
+                                            ),
+                                          ),
+                                        ),
+                                      )..fetchMealDetails(meal.idMeal),
                                   child: MealDetailsScreen(meal: meal),
                                 ),
                               ),
