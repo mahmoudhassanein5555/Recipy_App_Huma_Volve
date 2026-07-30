@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:reciepe_app/core/error/error_handler.dart';
 import 'package:reciepe_app/core/error/failure.dart';
+import 'package:reciepe_app/core/exceptions/cache_exception.dart';
 import 'package:reciepe_app/feature/meal_details/models/meal_detail_model.dart';
 
 class ApiService {
@@ -44,19 +44,16 @@ class ApiService {
         "/lookup.php",
         queryParameters: {"i": mealId},
       );
-      if (response.statusCode! >= 200 && response.statusCode! < 300) {
-        final jsonRes = response.data["meals"] as List;
-        if (jsonRes.isNotEmpty) {
-          return right(MealDetailModel.fromJson(jsonRes.first));
-        } else {
-          throw Exception("Meal details not found");
-        }
+
+      final jsonRes = response.data["meals"] as List;
+      if (jsonRes.isNotEmpty) {
+        return right(MealDetailModel.fromJson(jsonRes.first));
       } else {
-        throw Exception("Something went wrong");
+        throw Exception("Meal details not found");
       }
     } on DioException catch (e) {
-      final failure = HandleError.handle(e);
-      return left(failure);
+      throw ServerException(e);
     }
+
   }
 }

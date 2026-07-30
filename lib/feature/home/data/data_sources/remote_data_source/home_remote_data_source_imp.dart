@@ -1,9 +1,11 @@
+import 'package:dio/dio.dart';
+import 'package:reciepe_app/core/exceptions/cache_exception.dart';
 import 'package:reciepe_app/core/network/api_service.dart';
-import 'package:reciepe_app/feature/home/data/data_sources/home_data_source.dart';
+import 'package:reciepe_app/feature/home/data/data_sources/remote_data_source/home_remote_data_source.dart';
 import 'package:reciepe_app/feature/home/data/model/category_model.dart';
 import 'package:reciepe_app/feature/home/data/model/meal_model.dart';
 
-class HomeRemoteDataSourceImp implements HomeDataSource {
+class HomeRemoteDataSourceImp implements HomeRemoteDataSource {
   ApiService apiService;
   HomeRemoteDataSourceImp(this.apiService);
 
@@ -11,34 +13,41 @@ class HomeRemoteDataSourceImp implements HomeDataSource {
 
   @override
   Future<List<CategoryModel>> getCategories() async {
-    final response = await dio.get("/categories.php");
-    if (response.statusCode! >= 200 && response.statusCode! < 300) {
+    try {
+      final response = await dio.get("/categories.php");
+
       final jsonRes = response.data["categories"] as List;
       final modelRes = jsonRes.map(((e) => CategoryModel.fromJson(e))).toList();
+      if (response.data["success"] == false) {
+        throw ServerException(response.data["message"]);
+      }
       return modelRes;
-    } else {
-      final errorMessage = response.data["message"];
-      throw Exception(errorMessage);
-    }
+    } on DioException catch (e) {
+      throw ServerException(e);
+    } 
   }
 
   @override
   Future<List<MealModel>> getMealsByCategory(String category) async {
-    final response = await dio.get(
-      "/filter.php",
-      queryParameters: {"c": category},
-    );
-    if (response.statusCode! >= 200 && response.statusCode! < 300) {
+    try {
+      final response = await dio.get(
+        "/filter.php",
+        queryParameters: {"c": category},
+      );
       if (response.data["meals"] == null) {
         return [];
       }
       final jsonRes = response.data["meals"] as List;
       final modelRes = jsonRes.map(((e) => MealModel.fromJson(e))).toList();
       return modelRes;
-    } else {
-      final errorMessage = response.data["message"];
-      throw Exception(errorMessage);
+    } on DioException catch (e) {
+      throw ServerException(e);
     }
+    // if (response.statusCode! >= 200 && response.statusCode! < 300) {
+    // } else {
+    //   final errorMessage = response.data["message"];
+    //   throw Exception(errorMessage);
+    // }
   }
 }
 

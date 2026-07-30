@@ -1,9 +1,16 @@
+import 'package:hive/hive.dart';
 import 'package:reciepe_app/feature/home/domain/entity/home_category_entity.dart';
 
+part 'category_model.g.dart';
+@HiveType(typeId: 0)
 class CategoryModel {
+  @HiveField(0)
   String? idCategory;
+  @HiveField(1)
   String? strCategory;
+  @HiveField(2)
   String? strCategoryThumb;
+  @HiveField(3)
   String? strCategoryDescription;
 
   CategoryModel({

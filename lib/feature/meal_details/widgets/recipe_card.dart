@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:reciepe_app/feature/home/domain/entity/home_meal_entity.dart';
 import '../../../core/constants/app_colors.dart';
@@ -25,11 +26,10 @@ class RecipeCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             child: AspectRatio(
               aspectRatio: 1.1,
-              child: Image.network(
-                meal.strMealThumb ?? '',
+              child: CachedNetworkImage(
+                imageUrl: meal.strMealThumb ?? '',
                 fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
+                placeholder: (context, url) {
                   return Container(
                     color: const Color(0xFFFAF2EE),
                     child: const Center(
@@ -40,7 +40,7 @@ class RecipeCard extends StatelessWidget {
                     ),
                   );
                 },
-                errorBuilder: (context, error, stackTrace) {
+                errorWidget: (context, url, error) {
                   return Container(
                     color: const Color(0xFFFAF2EE),
                     child: const Icon(
