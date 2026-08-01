@@ -27,7 +27,7 @@ class RecipeHomeCubit extends Cubit<RecipeHomeState> {
       _categories = categories;
       emit(RecipeHomeSuccess(_categories, _meals));
       if (categories.isNotEmpty) {
-        await getMealsByCategory(categories.first.strCategory);//!!!!!!!!!
+        await getMealsByCategory(categories.first.strCategory); //!!!!!!!!!
       }
     });
   }

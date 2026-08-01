@@ -5,11 +5,7 @@ class CategoryAreaChip extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const CategoryAreaChip({
-    super.key,
-    required this.icon,
-    required this.label,
-  });
+  const CategoryAreaChip({super.key, required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {

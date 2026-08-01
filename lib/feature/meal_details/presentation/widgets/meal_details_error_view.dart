@@ -22,10 +22,7 @@ class MealDetailsErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        MealDetailsSliverAppBar(
-          title: mealTitle,
-          imageUrl: imageUrl,
-        ),
+        MealDetailsSliverAppBar(title: mealTitle, imageUrl: imageUrl),
         SliverFillRemaining(
           child: Center(
             child: Padding(
@@ -57,9 +54,7 @@ class MealDetailsErrorView extends StatelessWidget {
                       ),
                     ),
                     onPressed: () {
-                      context
-                          .read<MealDetailsCubit>()
-                          .fetchMealDetails(mealId);
+                      context.read<MealDetailsCubit>().fetchMealDetails(mealId);
                     },
                     child: const Text(
                       'Retry',

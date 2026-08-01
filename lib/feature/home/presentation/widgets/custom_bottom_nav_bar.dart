@@ -14,10 +14,26 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navItems = [
-      _NavItemData(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Home'),
-      _NavItemData(icon: Icons.search, activeIcon: Icons.search, label: 'Search'),
-      _NavItemData(icon: Icons.bookmark_border_rounded, activeIcon: Icons.bookmark_rounded, label: 'Saved'),
-      _NavItemData(icon: Icons.person_outline_rounded, activeIcon: Icons.person_rounded, label: 'Profile'),
+      _NavItemData(
+        icon: Icons.home_outlined,
+        activeIcon: Icons.home,
+        label: 'Home',
+      ),
+      _NavItemData(
+        icon: Icons.search,
+        activeIcon: Icons.search,
+        label: 'Search',
+      ),
+      _NavItemData(
+        icon: Icons.bookmark_border_rounded,
+        activeIcon: Icons.bookmark_rounded,
+        label: 'Saved',
+      ),
+      _NavItemData(
+        icon: Icons.person_outline_rounded,
+        activeIcon: Icons.person_rounded,
+        label: 'Profile',
+      ),
     ];
 
     return Container(
@@ -25,10 +41,7 @@ class CustomBottomNavBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         border: const Border(
-          top: BorderSide(
-            color: AppColors.subtleBorder,
-            width: 1,
-          ),
+          top: BorderSide(color: AppColors.subtleBorder, width: 1),
         ),
         boxShadow: [
           BoxShadow(
@@ -53,7 +66,9 @@ class CustomBottomNavBar extends StatelessWidget {
                 Icon(
                   isSelected ? item.activeIcon : item.icon,
                   size: 24,
-                  color: isSelected ? AppColors.navSelected : AppColors.navUnselected,
+                  color: isSelected
+                      ? AppColors.navSelected
+                      : AppColors.navUnselected,
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -61,7 +76,9 @@ class CustomBottomNavBar extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected ? AppColors.navSelected : AppColors.navSelected,
+                    color: isSelected
+                        ? AppColors.navSelected
+                        : AppColors.navSelected,
                   ),
                 ),
               ],

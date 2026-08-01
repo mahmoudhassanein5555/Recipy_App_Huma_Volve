@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:reciepe_app/core/cache/local_cache_service.dart';
 import 'package:reciepe_app/core/constants/app_colors.dart';
 import 'package:reciepe_app/core/network/api_service.dart';
 import 'package:reciepe_app/feature/home/data/data_sources/home_data_source.dart';
@@ -12,7 +13,9 @@ import 'package:reciepe_app/feature/home/presentation/view_model/recipe_home_cub
 import 'package:reciepe_app/feature/home/presentation/view_model/recipe_home_state.dart';
 import 'package:reciepe_app/feature/home/presentation/view/recipe_home_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalCacheService.init();
   runApp(const RecipeApp());
 }
 
@@ -23,9 +26,16 @@ class RecipeApp extends StatelessWidget {
     final ApiService apiService = ApiService();
     final HomeDataSource homeDataSource = HomeRemoteDataSourceImp(apiService);
     final HomeRepository homeRepository = HomeRepositoryImp(homeDataSource);
-    final HomeGetCategoryUseCase homeGetCategoryUseCase = HomeGetCategoryUseCase(homeRepository);
-    final HomeGetMealsUseCase homeGetMealsUseCase = HomeGetMealsUseCase(homeRepository,);
-    final RecipeHomeCubit recipeHomeCubit = RecipeHomeCubit(homeGetCategoryUseCase,homeGetMealsUseCase,RecipeHomeInitial(),);
+    final HomeGetCategoryUseCase homeGetCategoryUseCase =
+        HomeGetCategoryUseCase(homeRepository);
+    final HomeGetMealsUseCase homeGetMealsUseCase = HomeGetMealsUseCase(
+      homeRepository,
+    );
+    final RecipeHomeCubit recipeHomeCubit = RecipeHomeCubit(
+      homeGetCategoryUseCase,
+      homeGetMealsUseCase,
+      RecipeHomeInitial(),
+    );
     return MaterialApp(
       title: 'Recipe App',
       debugShowCheckedModeBanner: false,
@@ -40,8 +50,8 @@ class RecipeApp extends StatelessWidget {
       ),
       // home: const SeafoodScreen(),
       home: BlocProvider(
-        create: (context) => recipeHomeCubit ,
-        child: HomeScreen(),
+        create: (context) => recipeHomeCubit,
+        child: const HomeScreen(),
       ),
     );
   }

@@ -16,15 +16,10 @@ class MealDetailsLoadingView extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        MealDetailsSliverAppBar(
-          title: mealTitle,
-          imageUrl: imageUrl,
-        ),
+        MealDetailsSliverAppBar(title: mealTitle, imageUrl: imageUrl),
         const SliverFillRemaining(
           child: Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primaryBrown,
-            ),
+            child: CircularProgressIndicator(color: AppColors.primaryBrown),
           ),
         ),
       ],

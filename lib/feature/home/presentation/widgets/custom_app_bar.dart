@@ -54,15 +54,38 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 height: 40,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.subtleBorder,
-                    width: 1.5,
-                  ),
-                  image: const DecorationImage(
-                    image: NetworkImage(
-                      'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=150&q=80',
-                    ),
+                  border: Border.all(color: AppColors.subtleBorder, width: 1.5),
+                ),
+                child: ClipOval(
+                  child: Image.network(
+                    'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=150&q=80',
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const ColoredBox(
+                        color: AppColors.cardBackground,
+                        child: Icon(
+                          Icons.person,
+                          color: AppColors.primaryBrown,
+                          size: 22,
+                        ),
+                      );
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return const ColoredBox(
+                        color: AppColors.cardBackground,
+                        child: Center(
+                          child: SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.primaryBrown,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),

@@ -76,7 +76,9 @@ class MealDetailModel {
       strTags: strTags ?? '',
       strYoutube: strYoutube ?? '',
       strSource: strSource ?? '',
-      ingredients: ingredients.map((ingredient) => ingredient.toEntity()).toList(),
+      ingredients: ingredients
+          .map((ingredient) => ingredient.toEntity())
+          .toList(),
     );
   }
 }

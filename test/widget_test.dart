@@ -13,6 +13,7 @@ void main() {
   testWidgets('App renders successfully', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const RecipeApp());
+    await tester.pump(const Duration(seconds: 1));
 
     // Verify that Seafood category title is displayed.
     expect(find.text('Seafood'), findsOneWidget);

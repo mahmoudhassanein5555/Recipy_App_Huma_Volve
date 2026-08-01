@@ -5,11 +5,7 @@ class FilterHeaderRow extends StatelessWidget {
   final int count;
   final VoidCallback? onFilterTap;
 
-  const FilterHeaderRow({
-    super.key,
-    required this.count,
-    this.onFilterTap,
-  });
+  const FilterHeaderRow({super.key, required this.count, this.onFilterTap});
 
   @override
   Widget build(BuildContext context) {

@@ -11,7 +11,9 @@ class MealDetailsRepositoryImp implements MealDetailsRepository {
   MealDetailsRepositoryImp(this.dataSource);
 
   @override
-  Future<Either<Failure, MealDetailEntity>> getMealDetails(String mealId) async {
+  Future<Either<Failure, MealDetailEntity>> getMealDetails(
+    String mealId,
+  ) async {
     try {
       final response = await dataSource.getMealDetails(mealId);
       return right(response.toEntity());

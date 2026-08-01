@@ -81,9 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           setState(() {
                             _selectedCategoryIndex = index;
                           });
-                          context
-                              .read<RecipeHomeCubit>()
-                              .getMealsByCategory(item.strCategory);
+                          context.read<RecipeHomeCubit>().getMealsByCategory(
+                            item.strCategory,
+                          );
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
@@ -143,12 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       horizontal: 16.0,
                       vertical: 8.0,
                     ),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.72,
-                      crossAxisSpacing: 14,
-                      mainAxisSpacing: 16,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.72,
+                          crossAxisSpacing: 14,
+                          mainAxisSpacing: 16,
+                        ),
                     itemCount: meals.length,
                     itemBuilder: (context, index) {
                       final meal = meals[index];
@@ -158,16 +159,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => BlocProvider(
-                                  create: (context) =>
-                                      MealDetailsCubit(
-                                        GetMealDetailsUseCase(
-                                          MealDetailsRepositoryImp(
-                                            MealDetailsRemoteDataSourceImp(
-                                              ApiService(),
-                                            ),
-                                          ),
+                                  create: (context) => MealDetailsCubit(
+                                    GetMealDetailsUseCase(
+                                      MealDetailsRepositoryImp(
+                                        MealDetailsRemoteDataSourceImp(
+                                          ApiService(),
                                         ),
-                                      )..fetchMealDetails(meal.idMeal),
+                                      ),
+                                    ),
+                                  )..fetchMealDetails(meal.idMeal),
                                   child: MealDetailsScreen(meal: meal),
                                 ),
                               ),

@@ -84,9 +84,7 @@ class IngredientsSection extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.background,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppColors.subtleBorder,
-                        ),
+                        border: Border.all(color: AppColors.subtleBorder),
                       ),
                       child: Text(
                         ing.measure,
